@@ -10,6 +10,18 @@ export const createNewUser = async (req: Request, res: Response) => {
       });
     }
 
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        username: req.body.username,
+      },
+    });
+
+    if (existingUser) {
+      return res.status(500).json({
+        message: "User with this username already exist",
+      });
+    }
+
     const user = await prisma.user.create({
       data: {
         username: req.body.username,
