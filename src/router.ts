@@ -1,5 +1,8 @@
-import { Router } from "express";
-
+import { Router, Request, Response } from "express";
+import { body, validationResult } from "express-validator";
+import prisma from "./db";
+import { User } from "@prisma/client";
+import { handleInputErrors } from "./modules/middleware";
 const router = Router();
 
 /**
@@ -9,8 +12,30 @@ router.get("/product", (req, res) => {
   res.json({ message: "Product" });
 });
 router.get("/product/:id", () => {});
-router.put("/product/:id", () => {});
-router.post("/product", () => {});
+router.put(
+  "/product/:id",
+  body("name").isString(),
+  handleInputErrors,
+  (req, res) => {
+    return res.status(200).json({
+      message: "Success",
+    });
+  }
+);
+router.post(
+  "/product",
+  body("name").isString(),
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      res.status(400);
+      return res.json({
+        errors: errors.array(),
+      });
+    }
+  }
+);
 router.delete("/product/:id", () => {});
 
 /**
