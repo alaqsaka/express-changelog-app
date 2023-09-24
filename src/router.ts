@@ -3,15 +3,15 @@ import { body, oneOf, validationResult } from "express-validator";
 import prisma from "./db";
 import { User } from "@prisma/client";
 import { handleInputErrors } from "./modules/middleware";
+import { createProduct, getOneProduct, getProducts } from "./handlers/product";
+import { createUpdate } from "./handlers/update";
 const router = Router();
 
 /**
  * Product
  */
-router.get("/product", (req, res) => {
-  res.json({ message: "Product" });
-});
-router.get("/product/:id", () => {});
+router.get("/product", getProducts);
+router.get("/product/:id", getOneProduct);
 router.put(
   "/product/:id",
   body("name").isString(),
@@ -26,9 +26,7 @@ router.post(
   "/product",
   body("name").isString(),
   handleInputErrors,
-  async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-  }
+  createProduct
 );
 router.delete("/product/:id", () => {});
 
@@ -51,7 +49,7 @@ router.post(
   body("body").exists().isString(),
   body("version").optional(),
   body("status").isIn(["IN_PROGRESS", "SHIPPED", "DEPRECATED"]).optional(),
-  () => {}
+ createUpdate
 );
 router.delete("/update/:id", () => {});
 
